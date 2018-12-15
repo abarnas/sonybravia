@@ -32,7 +32,7 @@ Working on KDL-55W829B,
  */
  
 metadata {
-   definition (name: "Sony Bravia TV", namespace: "steveAbratt", author: "Steve Bratt") {
+   definition (name: "Sony TV", namespace: "abarnas", author: "Ard-Jan Barnas") {
       capability "Switch"
       capability "Polling"
       capability "Refresh"
