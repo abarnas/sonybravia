@@ -30,10 +30,80 @@ Working on KDL-55W829B,
  *  the TV shows as on.
  *
  */
+
+def getDefaultTheme(){
+    def userDefaultThemeMap = [:]
+
+    //Icons
+    userDefaultThemeMap.themeName = "Default"
+    userDefaultThemeMap.iconPlex = "https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg"
+    userDefaultThemeMap.iconStop = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/stop-icon.png"
+    userDefaultThemeMap.iconShutdown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/power-icon.png"
+    userDefaultThemeMap.iconUp = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/up-icon.png"
+    userDefaultThemeMap.iconDown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/down-icon.png"
+    userDefaultThemeMap.iconLeft = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/left-icon.png"
+    userDefaultThemeMap.iconRight = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/right-icon.png"
+    userDefaultThemeMap.iconBack = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/back-icon.png"
+    userDefaultThemeMap.iconInfo = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/info-icon.png"
+    userDefaultThemeMap.iconSkipFwd = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/small-fwd-icon.png"
+    userDefaultThemeMap.iconSkipRwd = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/small-rwd-icon.png"
+    userDefaultThemeMap.iconNext = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/next-icon.png"
+    userDefaultThemeMap.iconPrevious = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/prev-icon.png"
+    userDefaultThemeMap.iconMenu = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/menu-icon.png"
+    userDefaultThemeMap.iconHome = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/home-icon.png"
+    userDefaultThemeMap.iconPgUp = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/pg-up-icon.png"
+    userDefaultThemeMap.iconPgDown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/pg-down-icon.png"
+    
+    //Colors
+    userDefaultThemeMap.colMainWaiting = "#ffffff"     //White
+    userDefaultThemeMap.colMainStartup = "#90d2a7"     //Light Green
+    userDefaultThemeMap.colMainPlaying = "#79b821"     //Green
+    userDefaultThemeMap.colMainStopped = "#153591"     //Blue
+    userDefaultThemeMap.colMainPaused = "#e86d13"      //Orange
+    userDefaultThemeMap.colMainShutdown = "#e84e4e"    //Red
+
+    //Return
+    return userDefaultThemeMap
+}
+
+def getUserPref(pref){
+    def prefsMap = [:]
+    //Main Icon
+    prefsMap.iconMain = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/main-icon.png"
+    //Select Colour
+    prefsMap.colSelectActive = "#22a3ec"    //Blue
+    prefsMap.colSelectInactive = "#ffffff"  //White
+    //DECORATION
+    prefsMap.decPush = "ring"
+    prefsMap.decStop = "ring"
+    prefsMap.decShutdown = "flat"
+    prefsMap.decUp = "flat"
+    prefsMap.decDown = "flat"
+    prefsMap.decLeft = "flat"
+    prefsMap.decRight = "flat"
+    prefsMap.decBack = "flat"
+    prefsMap.decInfo = "ring"
+    prefsMap.decSkipF = "flat"
+    prefsMap.decSkipB = "flat"
+    prefsMap.decNext = "flat"
+    prefsMap.decPrev = "flat"
+    prefsMap.decMenu = "flat"
+    prefsMap.decHome = "flat"
+    prefsMap.decPup = "flat"
+    prefsMap.decPdown = "flat"
+    //CATEGORY SETTINGS
+    prefsMap.movieLabels = "cinema, movie, film"
+    prefsMap.sportLabels = "sport"
+    prefsMap.tvLabels = "bbc, itv, channel, sky, amc, fox"
+    prefsMap.minMovieRuntime = 4200
+    return prefsMap[pref]
+}
+
  
 metadata {
-   definition (name: "Sony TV", namespace: "SonyBravia", author: "abarnas") {
+   definition (name: "Sony TV", namespace: "abarnas", author: "Ard-Jan Barnas") {
       capability "Switch"
+      capability "Actuator"
       capability "Polling"
       capability "Refresh"
       capability "Media Controller"
@@ -54,6 +124,8 @@ metadata {
       command "mute"
       command "netflix"
       command "plex"
+      command "sling"
+      command "amazon"
       command "WOLC"
       command "ipaddress"
       command "iphex"
@@ -157,7 +229,7 @@ metadata {
    }
 
    tiles(scale:2) {
-      standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
+      standardTile("switch", "device.switch", width: 6, height: 4, canChangeIcon: true) {
          state "off", label: '${name}', action: "switch.on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
          state "on", label: 'ON', action: "switch.off", icon: "st.switches.switch.on", backgroundColor: "#79b821"
       }
@@ -202,10 +274,18 @@ metadata {
          state "default", label:"Netflix", action:"netflix", icon:""
       }
 
-      standardTile("plex", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
-         state "default", label:"Plex", action:"plex", icon:""
+      standardTile("plex", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
+         state "default", label:"Plex", action:"plex", icon:"${getUserTheme('default','iconPlex')}"
       }
-
+      
+      standardTile("sling", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
+         state "default", label:"Sling", action:"sling", icon:""
+      }      
+      
+      standardTile("amazon", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
+         state "default", label:"Amazon", action:"amazon", icon:""
+      }   
+      
       standardTile("home", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
          state "default", label:"HOME", action:"home", icon:""
       }
@@ -576,7 +656,7 @@ metadata {
     
       main "switch"
          //A number of the available buttons are commented out in the lines below, All of these buttons work but having all of them avilable slowed down the smart things phone application. if you would like some of these buttons availabel to you you can move them out of the commented line on to the line above 
-      details(["switch", "hdmi1", "hdmi2", "hdmi3", "hdmi4", "netflix", "Plex", "Digital", "tv_source", "home", "mute", "picoff", "gguide", "epg", "favorites", "display", "options", "retu", "up", "down", "right", "left", "confirm", "Forward", "Play", "Rewind", "Prev", "Stop", "Next", "Rec", "Pause", "Eject", "volumeup", "volumedown", "ChannelUp", "ChannelDown",
+      details(["switch", "plex", "sling", "amazon", "hdmi1", "hdmi2", "hdmi3", "hdmi4", "netflix","tv_source", "home", "mute", "picoff", "gguide", "epg", "favorites", "display", "options", "retu", "up", "down", "right", "left", "confirm", "Forward", "Play", "Rewind", "Prev", "Stop", "Next", "Rec", "Pause", "Eject", "volumeup", "volumedown", "ChannelUp", "ChannelDown", "Exit", "Enter",
          /** "green", "yellow", "blue", "num1", "num2", "num3", "num4", "num5", "num6", "num7", "num8", "num9", "num0", "num11", "num12", "SubTitle", "ClosedCaption", "Enter", "DOT", "Analog", "Teletext", "Exit", "Analog2", "AD", "Analogg", "BS", "CS", "BSCS", "Ddata", "PicOff", "Tv_Radio", "Theater", "SEN", "InternetWidgets", "InternetVideo", "SceneSelect", "Mode3D", "iManual", "Audio", "Wide", "Jump", "PAP", "MyEPG", "ProgramDescription", "WriteChapter", "TrackID", "TenKey", "AppliCast", "acTVila", "DeleteVideo", "PhotoFrame", "TvPause", "KeyPad", "Media", "FlashPlus", "FlashMinus", "TopMenu", "RakurakuStart", "OneTouchTimeRec", "OneTouchView", "OneTouchRec", "OneTouchStop", "DUX", "FootballMode", "Social",*/ 
          "WOLC", "refresh"
          ])
@@ -595,14 +675,30 @@ metadata {
 }
 
 
+def installed() {
+	initialize()
+}
+
 
 def updated(){
 	log.debug( "Preferences Updated rebuilding IP Address, MAC address and Hex Network ID")
-	state.tv_poll_count = 0
 	ipaddress()
 	iphex()
-	refresh()
+    unschedule()
+	initialize()   
 }
+
+
+def initialize() {
+    runEvery1Minute("pushPowerUpdate")
+}
+
+
+private pushPowerUpdate() {
+    def powerJson = "{\"id\":2,\"method\":\"getPowerStatus\",\"version\":\"1.0\",\"params\":[]}"
+    def result = sendJsonRpcCommand(powerJson)
+}
+
 
 def ipaddress(){
 	//Build an IP Address from the 4 input preferences
@@ -643,28 +739,31 @@ def iphex(){
     //device.deviceNetworkId = ("${netid}")
 }
 
+
+// parse events into attributes
 def parse(description) {
-  //log.debug ("Parsing '${description}'")
-  def msg = parseLanMessage(description)
-	//Set the Global Value of state.tv_mac
-	//log.debug "${msg}"
-    state.tv_mac = msg.mac
-    log.debug ("MAC Address stored Globally as '${state.tv_mac}'")
-    //log.debug "msg '${msg}'"
-    //log.debug "msg.json '${msg.json?.id}'"
-    
-  
-  if (msg.json?.id == 2) {
-  	//Set the Global value of state.tv on or off
-    state.tv = (msg.json.result[0]?.status == "active") ? "on" : "off"
-    sendEvent(name: "switch", value: state.tv)
-    log.debug "TV is '${state.tv}'"
-    state.tv_poll_count = 0
-  }
+    def msg = parseLanMessage(description)
+    if (msg.json?.id == 2) {
+        log.debug "parse Message.json '${msg.json}'"
+        def tv = (msg.json.result[0]?.status == "active") ? "on" : "off"
+        if (tv != state.tv) {
+        	log.debug "parse change state: ${tv}"
+        	state.tv = tv
+        	sendEvent(name: "switch", value: tv)
+        }
+    }
+	/*
+    def volumeEvent = createEvent(name: "volume", value: "on")
+    def channelEvent = createEvent(name: "channel", value: "on")
+	def powerEvent = createEvent(name: "power", value: "on")
+	def pictureEvent = createEvent(name: "picture", value: "on")
+	def soundEvent = createEvent(name: "sound", value: "on")
+	def movieModeEvent = createEvent(name: "movieMode", value: "on")
+	*/
 }
 
 
-private sendJsonRpcCommand(json) {
+def sendJsonRpcCommand(json) {
   def headers = [:]
   headers.put("HOST", "${state.tv_ip}:${tv_port}")
   headers.put("Content-Type", "application/json")
@@ -677,15 +776,17 @@ private sendJsonRpcCommand(json) {
     headers: headers
   )
 
-  result
+  sendHubCommand(result)
 }
 
 
 private sendJsonAppCommand(json) {
   def headers = [:]
   headers.put("HOST", "${state.tv_ip}:${tv_port}")
-  headers.put("Content-Type", "application/json")
+  headers.put("Accept", "application/xml")
+  headers.put("Content-Type", "application/xml")
   headers.put("X-Auth-PSK", "${tv_psk}")
+  headers.put("SOAPAction", "urn:schemas-sony-com:service:IRCC:1#X_SendIRCC")
 
   def result = new physicalgraph.device.HubAction(
     method: 'POST',
@@ -694,55 +795,30 @@ private sendJsonAppCommand(json) {
     headers: headers
   )
 
-  result
-}
-
-
-def installed() {
-  log.debug "Executing 'installed'"
-  poll()
+  sendHubCommand(result)
 }
 
 
 def on() {
-  log.debug "Executing 'on'"
-  
-  if (state.tv == "polling"){
-  	  WOLC()
-      def json = "{\"method\":\"setPowerStatus\",\"version\":\"1.0\",\"params\":[{\"status\":true}],\"id\":102}"
-  	  def result = sendJsonRpcCommand(json)
-  } else {
-  	  def json = "{\"method\":\"setPowerStatus\",\"version\":\"1.0\",\"params\":[{\"status\":true}],\"id\":102}"
-  	  def result = sendJsonRpcCommand(json)
-  }
+	WOLC()
+    def json = "{\"method\":\"setPowerStatus\",\"version\":\"1.0\",\"params\":[{\"status\":true}],\"id\":102}"
+    def result = sendJsonRpcCommand(json)
+    sendEvent(name: "switch", value: "on")
+    state.tv = "on"
 }
 
 
 def off() {
-  log.debug "Executing 'off'"
-
-  def json = "{\"method\":\"setPowerStatus\",\"version\":\"1.0\",\"params\":[{\"status\":false}],\"id\":102}"
-  def result = sendJsonRpcCommand(json)
-
+    def json = "{\"method\":\"setPowerStatus\",\"version\":\"1.0\",\"params\":[{\"status\":false}],\"id\":102}"
+    def result = sendJsonRpcCommand(json)
+    sendEvent(name: "switch", value: "off")
+    state.tv = "off"
 }
 
 
 def refresh() {
   log.debug "Executing 'refresh'"
-  poll()
-}
-
-def poll() {
-  //set state.tv to 0ff
-  log.debug "poll count ${state.tv_poll_count}"
-  state.tv = "polling"
-  state.tv_poll_count = (state.tv_poll_count + 1)
-  if (state.tv_poll_count > 1 ) {
-  	  sendEvent(name: "switch", value: "off")
-  }
-  log.debug "Executing 'poll'"
-  def json = "{\"id\":2,\"method\":\"getPowerStatus\",\"version\":\"1.0\",\"params\":[]}"
-  def result = sendJsonRpcCommand(json)
+  pushPowerUpdate()
 }
 
 
@@ -751,12 +827,34 @@ All remote Functions Assigned below
 --------------------------------------------------------*/
 
 def plex(){
-	//Start Plex
-  def appcmd = "com.sony.dtv.com.plexapp.android.com.plexapp.plex.activities.SplashActivity"
-  def json = "{\"method\":\"setActiveApp\",\"version\":\"1.0\",\"params\":[{\"uri\":\"${appcmd}\"}],\"id\":10}"
+  //Start Plex
+  def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.plexapp.android.com.plexapp.plex.activities.SplashActivity\"}],\"id\":102, \"version\":\"1.0\"}"
+  log.debug( "${json}" )
+
   def result = sendJsonAppCommand(json)
-  log.debug( "hubAction = ${json}")
+  log.debug( "${result}" )
 }
+
+
+def sling(){
+  //Start Sling
+  def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.sling.com.movenetworks.StartupActivity\"}],\"id\":102, \"version\":\"1.0\"}"
+  log.debug( "${json}" )
+
+  def result = sendJsonAppCommand(json)
+  log.debug( "${result}" )
+}
+
+
+def amazon(){
+  //Start Amazon Prime Video
+  def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity\"}],\"id\":102, \"version\":\"1.0\"}"
+  log.debug( "${json}" )
+
+  def result = sendJsonAppCommand(json)
+  log.debug( "${result}" )
+}
+
 
 def digital(){
 	//Set Remote command to send
