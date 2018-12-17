@@ -31,75 +31,6 @@ Working on KDL-55W829B,
  *
  */
 
-def getDefaultTheme(){
-    def userDefaultThemeMap = [:]
-
-    //Icons
-    userDefaultThemeMap.themeName = "Default"
-    userDefaultThemeMap.iconPlex = "https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg"
-    userDefaultThemeMap.iconStop = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/stop-icon.png"
-    userDefaultThemeMap.iconShutdown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/power-icon.png"
-    userDefaultThemeMap.iconUp = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/up-icon.png"
-    userDefaultThemeMap.iconDown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/down-icon.png"
-    userDefaultThemeMap.iconLeft = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/left-icon.png"
-    userDefaultThemeMap.iconRight = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/right-icon.png"
-    userDefaultThemeMap.iconBack = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/back-icon.png"
-    userDefaultThemeMap.iconInfo = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/info-icon.png"
-    userDefaultThemeMap.iconSkipFwd = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/small-fwd-icon.png"
-    userDefaultThemeMap.iconSkipRwd = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/small-rwd-icon.png"
-    userDefaultThemeMap.iconNext = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/next-icon.png"
-    userDefaultThemeMap.iconPrevious = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/prev-icon.png"
-    userDefaultThemeMap.iconMenu = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/menu-icon.png"
-    userDefaultThemeMap.iconHome = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/home-icon.png"
-    userDefaultThemeMap.iconPgUp = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/pg-up-icon.png"
-    userDefaultThemeMap.iconPgDown = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/themes/default/pg-down-icon.png"
-    
-    //Colors
-    userDefaultThemeMap.colMainWaiting = "#ffffff"     //White
-    userDefaultThemeMap.colMainStartup = "#90d2a7"     //Light Green
-    userDefaultThemeMap.colMainPlaying = "#79b821"     //Green
-    userDefaultThemeMap.colMainStopped = "#153591"     //Blue
-    userDefaultThemeMap.colMainPaused = "#e86d13"      //Orange
-    userDefaultThemeMap.colMainShutdown = "#e84e4e"    //Red
-
-    //Return
-    return userDefaultThemeMap
-}
-
-def getUserPref(pref){
-    def prefsMap = [:]
-    //Main Icon
-    prefsMap.iconMain = "https://raw.githubusercontent.com/north3221/north3221SmartThings/master/resources/main-icon.png"
-    //Select Colour
-    prefsMap.colSelectActive = "#22a3ec"    //Blue
-    prefsMap.colSelectInactive = "#ffffff"  //White
-    //DECORATION
-    prefsMap.decPush = "ring"
-    prefsMap.decStop = "ring"
-    prefsMap.decShutdown = "flat"
-    prefsMap.decUp = "flat"
-    prefsMap.decDown = "flat"
-    prefsMap.decLeft = "flat"
-    prefsMap.decRight = "flat"
-    prefsMap.decBack = "flat"
-    prefsMap.decInfo = "ring"
-    prefsMap.decSkipF = "flat"
-    prefsMap.decSkipB = "flat"
-    prefsMap.decNext = "flat"
-    prefsMap.decPrev = "flat"
-    prefsMap.decMenu = "flat"
-    prefsMap.decHome = "flat"
-    prefsMap.decPup = "flat"
-    prefsMap.decPdown = "flat"
-    //CATEGORY SETTINGS
-    prefsMap.movieLabels = "cinema, movie, film"
-    prefsMap.sportLabels = "sport"
-    prefsMap.tvLabels = "bbc, itv, channel, sky, amc, fox"
-    prefsMap.minMovieRuntime = 4200
-    return prefsMap[pref]
-}
-
- 
 metadata {
    definition (name: "Sony TV", namespace: "abarnas", author: "Ard-Jan Barnas") {
       capability "Switch"
@@ -275,15 +206,15 @@ metadata {
       }
 
       standardTile("plex", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"Plex", action:"plex", icon:"${getUserTheme('default','iconPlex')}"
+         state "default", label:"", action:"plex", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg"
       }
       
       standardTile("sling", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"Sling", action:"sling", icon:""
+         state "default", label:"", action:"sling", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/sling.jpg"
       }      
       
       standardTile("amazon", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"Amazon", action:"amazon", icon:""
+         state "default", label:"", action:"amazon", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/amazon.jpg"
       }   
       
       standardTile("home", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
