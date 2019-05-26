@@ -24,7 +24,6 @@ Working on KDL-55W829B,
  *
  *  Please make sure the TV is on when you set up the device. 
  *
- *
  *  Wake on Lan button works when the TV is in ECO mode and goes to sleep even on wifi. however it takes a slight bit longer to boot
  *  wake on lan wont yet update the status to on very quickly and status polls happen about every 5 mins so it maybe 5 mins before
  *  the TV shows as on.
@@ -189,8 +188,9 @@ metadata {
          state "default", label:"HDMI 1", action:"hdmi1", icon:""
       }
 
-      standardTile("hdmi2", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
-         state "default", label:"HDMI 2", action:"hdmi2", icon:""
+      standardTile("hdmi2", "device.hdmi2", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
+         state "off", label:"HDMI 2", action:"hdmi2", icon:"", backgroundColor: "#ffffff"
+         state "on", label:"HDMI 2", action:"", icon:"", backgroundColor: "#79b821"
       }
       
       standardTile("hdmi3", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
@@ -205,16 +205,19 @@ metadata {
          state "default", label:"Netflix", action:"netflix", icon:""
       }
 
-      standardTile("plex", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"", action:"plex", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg"
+      standardTile("plex", "device.plex", height: 1, width: 2, decoration: "flat") {
+         state "plexoff", label:"", action:"plex", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg", backgroundColor: "#ffffff"
+         state "plexon", label:"", action:"", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/plex.jpg", backgroundColor: "#79b821"
       }
+         
+      standardTile("youtubetv", "device.youtubetv", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
+         state "off", label:"", action:"youtubetv", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/youtubetv.jpg", backgroundColor: "#ffffff"
+         state "on", label:"", action:"", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/youtubetv.jpg", backgroundColor: "#79b821"
+      }  
       
-      standardTile("sling", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"", action:"sling", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/sling.jpg"
-      }      
-      
-      standardTile("amazon", "device.switch", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
-         state "default", label:"", action:"amazon", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/amazon.jpg"
+      standardTile("amazon", "device.amazon", inactiveLabel: false, height: 1, width: 2, decoration: "flat") {
+         state "off", label:"", action:"amazon", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/amazon.jpg", backgroundColor: "#ffffff"
+         state "on", label:"", action:"", icon:"https://raw.githubusercontent.com/abarnas/sonybravia/master/resources/amazon.jpg", backgroundColor: "#79b821"
       }   
       
       standardTile("home", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
@@ -587,7 +590,7 @@ metadata {
     
       main "switch"
          //A number of the available buttons are commented out in the lines below, All of these buttons work but having all of them avilable slowed down the smart things phone application. if you would like some of these buttons availabel to you you can move them out of the commented line on to the line above 
-      details(["switch", "plex", "sling", "amazon", "hdmi1", "hdmi2", "hdmi3", "hdmi4", "netflix","tv_source", "home", "mute", "picoff", "gguide", "epg", "favorites", "display", "options", "retu", "up", "down", "right", "left", "confirm", "Forward", "Play", "Rewind", "Prev", "Stop", "Next", "Rec", "Pause", "Eject", "volumeup", "volumedown", "ChannelUp", "ChannelDown", "Exit", "Enter",
+      details(["switch", "plex", "youtubetv", "amazon", "hdmi1", "hdmi2", "hdmi3", "hdmi4", "netflix","tv_source", "home", "mute", "picoff", "gguide", "epg", "favorites", "display", "options", "retu", "up", "down", "right", "left", "confirm", "Forward", "Play", "Rewind", "Prev", "Stop", "Next", "Rec", "Pause", "Eject", "volumeup", "volumedown", "ChannelUp", "ChannelDown", "Exit", "Enter",
          /** "green", "yellow", "blue", "num1", "num2", "num3", "num4", "num5", "num6", "num7", "num8", "num9", "num0", "num11", "num12", "SubTitle", "ClosedCaption", "Enter", "DOT", "Analog", "Teletext", "Exit", "Analog2", "AD", "Analogg", "BS", "CS", "BSCS", "Ddata", "PicOff", "Tv_Radio", "Theater", "SEN", "InternetWidgets", "InternetVideo", "SceneSelect", "Mode3D", "iManual", "Audio", "Wide", "Jump", "PAP", "MyEPG", "ProgramDescription", "WriteChapter", "TrackID", "TenKey", "AppliCast", "acTVila", "DeleteVideo", "PhotoFrame", "TvPause", "KeyPad", "Media", "FlashPlus", "FlashMinus", "TopMenu", "RakurakuStart", "OneTouchTimeRec", "OneTouchView", "OneTouchRec", "OneTouchStop", "DUX", "FootballMode", "Social",*/ 
          "WOLC", "refresh"
          ])
@@ -603,9 +606,15 @@ metadata {
 		input name: "tv_psk", type: "text", title: "PSK Passphrase Set on your TV", description: "Enter passphrase", required: true, displayDuringSetup: true
 	}
 
+
 }
 
 
+def getStateButtons(){
+    return ["plex","youtubetv","amazon"]
+}
+
+    
 def installed() {
 	initialize()
 }
@@ -621,7 +630,7 @@ def updated(){
 
 
 def initialize() {
-    runEvery1Minute("pushPowerUpdate")
+    runEvery1Minute("refresh")
 }
 
 
@@ -630,6 +639,11 @@ private pushPowerUpdate() {
     def result = sendJsonRpcCommand(powerJson)
 }
 
+
+private pushSourceUpdate() {
+    def json = "{\"id\":5,\"method\":\"getPlayingContentInfo\",\"version\":\"1.0\",\"params\":[]}"
+    def result = sendJsonAvRpcCommand(json)
+}
 
 def ipaddress(){
 	//Build an IP Address from the 4 input preferences
@@ -683,6 +697,32 @@ def parse(description) {
         	sendEvent(name: "switch", value: tv)
         }
     }
+
+    
+    sendEvent(name: "hdmi2", value: "off", isStateChange: true)
+
+    if (msg.json?.id == 5) {
+        log.debug "parse Message.json '${msg.json}'"
+        if (msg.json.result[0]?.title == "HDMI 1") {
+        }
+        else if  (msg.json.result[0]?.title == "HDMI 2") {
+            state.hdmi2 = "on"
+     		sendEvent(name: "hdmi2", value: "on")
+        }
+        else if  (msg.json.result[0]?.title == "HDMI 3") {
+        }
+        else if  (msg.json.result[0]?.title == "HDMI 4") {
+        }
+        else {
+        	sendEvent(name: "hdmi2", value: "off")
+        }
+    }
+    
+    /*
+    sendEvent(name:"plex", value:"on", isStateChange: true)
+    sendEvent(name:"sling", value:"off", isStateChange: true)
+    sendEvent(name:"amazon", value:"off", isStateChange: true)
+    */
 	/*
     def volumeEvent = createEvent(name: "volume", value: "on")
     def channelEvent = createEvent(name: "channel", value: "on")
@@ -708,10 +748,29 @@ def sendJsonRpcCommand(json) {
   )
 
   sendHubCommand(result)
+  return result
 }
 
 
-private sendJsonAppCommand(json) {
+def sendJsonAvRpcCommand(json) {
+  def headers = [:]
+  headers.put("HOST", "${state.tv_ip}:${tv_port}")
+  headers.put("Content-Type", "application/json")
+  headers.put("X-Auth-PSK", "${tv_psk}")
+
+  def result = new physicalgraph.device.HubAction(
+    method: 'POST',
+    path: '/sony/avContent',
+    body: json,
+    headers: headers
+  )
+
+  sendHubCommand(result)
+  return result
+}
+
+
+private sendJsonAppCommand(buttonName, json) {
   def headers = [:]
   headers.put("HOST", "${state.tv_ip}:${tv_port}")
   headers.put("Accept", "application/xml")
@@ -727,6 +786,8 @@ private sendJsonAppCommand(json) {
   )
 
   sendHubCommand(result)
+  updateStatus(buttonName)
+  return result
 }
 
 
@@ -750,8 +811,24 @@ def off() {
 def refresh() {
   log.debug "Executing 'refresh'"
   pushPowerUpdate()
+  pushSourceUpdate()
+  updateStatus()
 }
 
+
+def updateStatus(activeButton){
+  getStateButtons().each{
+  //for (button in getStateButtons()){
+     sendEvent(name: "${it}", value: "off")
+     log.debug("button: $it")
+  }
+
+	log.debug( "activebutton: $activeButton" )
+    log.debug ( "stateButtons: $stateButtons" )
+    if (activeButton != null && activeButton != ""){
+        sendEvent(name: activeButton, value: "on")
+    }
+}
 
 /**-------------------------------------------------------
 All remote Functions Assigned below
@@ -760,10 +837,11 @@ All remote Functions Assigned below
 def plex(){
   //Start Plex
   def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.plexapp.android.com.plexapp.plex.activities.SplashActivity\"}],\"id\":102, \"version\":\"1.0\"}"
-  log.debug( "${json}" )
+  log.debug( "json: '${json}'" )
 
-  def result = sendJsonAppCommand(json)
-  log.debug( "${result}" )
+  def result = sendJsonAppCommand("plex", json)
+//  sendEvent(name:"plex", value: "plexon", isStateChange: true)
+//  state.plex = "plexon"
 }
 
 
@@ -772,8 +850,10 @@ def sling(){
   def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.sling.com.movenetworks.StartupActivity\"}],\"id\":102, \"version\":\"1.0\"}"
   log.debug( "${json}" )
 
-  def result = sendJsonAppCommand(json)
-  log.debug( "${result}" )
+  def result = sendJsonAppCommand("sling", json)
+//  sendEvent(name:"plex", value: "off", isStateChange: true)
+//  state.plex = "plexoff"
+//  sendEvent( name: "sling", value: "on")
 }
 
 
@@ -782,10 +862,34 @@ def amazon(){
   def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.amazon.amazonvideo.livingroom.com.amazon.ignition.IgnitionActivity\"}],\"id\":102, \"version\":\"1.0\"}"
   log.debug( "${json}" )
 
-  def result = sendJsonAppCommand(json)
-  log.debug( "${result}" )
+  def result = sendJsonAppCommand("amazon", json)
+//  sendEvent(name:"plex", value: "off", isStateChange: true)
+//  state.plex = "plexoff"
+//  sendEvent( name: "sling", value: "on")
 }
 
+
+def youtube(){
+  //Start YouTube
+  def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.google.android.youtube.tv.com.google.android.apps.youtube.tv.activity.ShellActivity\"}],\"id\":102, \"version\":\"1.0\"}"
+  log.debug( "${json}" )
+
+  def result = sendJsonAppCommand("youtube", json)
+//  sendEvent(name:"plex", value: "off", isStateChange: true)
+//  state.plex = "plexoff"
+//  sendEvent( name: "sling", value: "on")
+}
+
+def youtubetv(){
+  //Start YouTube TV
+  def json = "{\"method\":\"setActiveApp\",\"params\":[{\"uri\":\"com.sony.dtv.com.google.android.youtube.tvunplugged.com.google.android.apps.youtube.tvunplugged.activity.MainActivity\"}],\"id\":102, \"version\":\"1.0\"}"
+  log.debug( "${json}" )
+
+  def result = sendJsonAppCommand("youtubetv", json)
+//  sendEvent(name:"plex", value: "off", isStateChange: true)
+//  state.plex = "plexoff"
+//  sendEvent( name: "sling", value: "on")
+}
 
 def digital(){
 	//Set Remote command to send
